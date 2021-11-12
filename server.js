@@ -6,6 +6,8 @@ const app = express();
 const http = require('http').Server(app);
 const mysql =require('./mysql').pool;
 const bodyParser=require('body-parser');
+const md5 = require('md5');
+
 app.use(bodyParser.json());
 
 http.listen(3000, () => {
@@ -221,6 +223,53 @@ return await res.json(error);
 await res.status(201).send({
   mensagem: "Produto inserido com sucesso!",
   idProduto:results.insertId
+});
+return conn.release();
+}
+}, (error) => {
+console.log(error);
+})
+}
+)
+
+})
+
+app.use('/cadastra-usuario', (req, res) => 
+{
+  let _hash = md5(req.body.senhaUsuario);
+  let sql = 
+  `CALL proc_cadastro_usuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+mysql.getConnection((error, conn) => {
+if (error) throw error;
+conn.query(
+sql,
+[
+        req.body.nmUsuario,
+        req.body.enderecoUsuario,
+        req.body.cidadeUsuario,
+        req.body.bairroUsuario,
+        req.body.cepUsuario,
+        req.body.telUsuario,
+       _hash,
+        req.body.emailUsuario,
+        req.body.dtCriacaoUsuario,
+        req.body.ativoUsuario,
+        req.body.icCpfCnpjUsuario
+  
+
+],
+async (error, results, fields) => {
+if (error) {
+console.log("Error: ", error);
+return await res.json(error);
+} else {
+
+// console.log("REsults", results)
+await res.status(201).send({
+  mensagem: results[0][0].RESPOSTA,
+  idUsuario: results[0][0].InsertId
+   //idProduto:results.insertId
 });
 return conn.release();
 }
