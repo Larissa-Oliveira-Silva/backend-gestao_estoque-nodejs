@@ -1,6 +1,8 @@
 'use-strict'
 const mysql = require('../mysql').pool;
 const md5 = require('md5');
+const jwt = require('jsonwebtoken')
+const variables = require('../bin/configuration/variables');
 
 class UsuarioController{
 
@@ -77,9 +79,18 @@ return await res.json(error);
 } else {
 
 // console.log("REsults", results)
+
+if(results[1][0].COD_RESPOSTA != 1){
+  await res.status(201).send({
+    mensagem: results[1],
+  });
+} else {
+
 await res.status(201).send({
   mensagem: results[1],
+  token: jwt.sign({ user: results[1][0].CD_USUARIO }, variables.Security.secreteKey)
 });
+}
 return conn.release();
 }
 }, (error) => {

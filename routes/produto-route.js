@@ -5,13 +5,14 @@ const router = express.Router();
 const mysql =require('../mysql').pool;
 const produtoController = require('../controllers/produto-controller');
 const produto = new produtoController();
+const auth = require('../middlewares/authentication');
 
-router.get('/', produto.listarProdutos) 
-router.get('/:idUsuario', produto.listarProdutosUsuario)
-router.get('/:idProduto/:idUsuario', produto.listarPorIdProduto)
+router.get('/',auth, produto.listarProdutos) 
+router.get('/:idUsuario',auth, produto.listarProdutosUsuario)
+router.get('/:idProduto/:idUsuario',auth, produto.listarPorIdProduto)
 
-router.delete('/:idProduto', produto.deletaProduto)
-router.put('/:idProduto', produto.atualizaProduto)
-router.post('/', produto.insereProduto)
+router.delete('/:idProduto',auth, produto.deletaProduto)
+router.put('/:idProduto',auth, produto.atualizaProduto)
+router.post('/',auth, produto.insereProduto)
 
 module.exports = router;
